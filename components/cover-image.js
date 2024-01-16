@@ -7,6 +7,7 @@ export default function CoverImage({ title, responsiveImage, slug }) {
     image = (
       <video
         controls
+        autoPlay
         alt={`Cover Image for ${title}`}
         className={cn('shadow-small', {
           'hover:shadow-medium transition-shadow duration-200': slug,
