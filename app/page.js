@@ -1,11 +1,11 @@
-import { draftMode } from "next/headers";
-import { toNextMetadata } from "react-datocms";
+import { draftMode } from 'next/headers';
+import { toNextMetadata } from 'react-datocms';
 
-import { performRequest } from "@/lib/datocms";
-import { metaTagsFragment, responsiveImageFragment } from "@/lib/fragments";
+import { performRequest } from '@/lib/datocms';
+import { metaTagsFragment, responsiveImageFragment } from '@/lib/fragments';
 
-import { DraftPostIndex } from "@/components/draft-post-index";
-import { PostIndex } from "@/components/post-index";
+import { DraftPostIndex } from '@/components/draft-post-index';
+import { PostIndex } from '@/components/post-index';
 
 const PAGE_CONTENT_QUERY = `
   {
@@ -25,9 +25,7 @@ const PAGE_CONTENT_QUERY = `
       excerpt
       date
       coverImage {
-        responsiveImage(imgixParams: {fm: jpg, fit: crop, w: 2000, h: 1000 }) {
-          ...responsiveImageFragment
-        }
+        url
       }
       author {
         name

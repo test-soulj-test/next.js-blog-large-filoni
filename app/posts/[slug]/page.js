@@ -1,14 +1,14 @@
-import { draftMode } from 'next/headers'
-import { toNextMetadata } from "react-datocms";
+import { draftMode } from 'next/headers';
+import { toNextMetadata } from 'react-datocms';
 
-import { performRequest } from "@/lib/datocms";
-import { metaTagsFragment, responsiveImageFragment } from "@/lib/fragments";
+import { performRequest } from '@/lib/datocms';
+import { metaTagsFragment, responsiveImageFragment } from '@/lib/fragments';
 
 import { DraftPostPage } from '@/components/draft-post-page';
 import { PostPage } from '@/components/post-page';
 
 export async function generateStaticParams() {
-  const { allPosts } = await performRequest({ query: `{ allPosts { slug } }` });
+  const { allPosts } = await performRequest({ query: '{ allPosts { slug } }' });
 
   return allPosts.map(({ slug }) => slug);
 }
@@ -45,8 +45,9 @@ const PAGE_CONTENT_QUERY = `
         url(imgixParams: {fm: jpg, fit: crop, w: 2000, h: 1000 })
       }
       coverImage {
-        responsiveImage(imgixParams: {fm: jpg, fit: crop, w: 2000, h: 1000 }) {
-          ...responsiveImageFragment
+        url
+        video {
+          duration
         }
       }
       author {
@@ -87,13 +88,17 @@ const PAGE_CONTENT_QUERY = `
 function getPageRequest(slug) {
   const { isEnabled } = draftMode();
 
-  return { query: PAGE_CONTENT_QUERY, includeDrafts: isEnabled, variables: { slug } };
+  return {
+    query: PAGE_CONTENT_QUERY,
+    includeDrafts: isEnabled,
+    variables: { slug },
+  };
 }
 
 export async function generateMetadata({ params }) {
-  const { site, post } = await performRequest(getPageRequest(params.slug))
+  const { site, post } = await performRequest(getPageRequest(params.slug));
 
-  return toNextMetadata([ ...site.favicon, ...post.seo ])
+  return toNextMetadata([...site.favicon, ...post.seo]);
 }
 
 export default async function Page({ params }) {
