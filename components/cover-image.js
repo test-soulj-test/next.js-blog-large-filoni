@@ -5,6 +5,7 @@ export default function CoverImage({ title, responsiveImage, slug }) {
   let image;
   if (responsiveImage.video) {
     image = (
+      // biome-ignore lint/a11y/useMediaCaption: <explanation>
       <video
         controls
         autoPlay
@@ -13,7 +14,7 @@ export default function CoverImage({ title, responsiveImage, slug }) {
           'hover:shadow-medium transition-shadow duration-200': slug,
         })}
       >
-        <source src={responsiveImage.url} type="video/mp4"></source>
+        <source src={responsiveImage.url} type="video/mp4" />
       </video>
     );
   } else {
