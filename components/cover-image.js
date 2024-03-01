@@ -46,7 +46,7 @@ export default function CoverImage({
           'hover:shadow-medium transition-shadow duration-200': slug,
         })}
       >
-        <source src={responsiveImage.video.url} type="video/mp4" />
+        <source src={responsiveImage.video.mp4Url} type="video/mp4" />
       </video>
     );
   } else if (responsiveImage) {

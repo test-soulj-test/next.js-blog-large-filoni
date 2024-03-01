@@ -37,7 +37,10 @@ const PAGE_CONTENT_QUERY = `
       coverImage {
         url
         video {
-          url
+          mp4Url
+        }
+        responsiveImage(imgixParams: {auto: format}) {
+          ...responsiveImageFragment
         }
       }
       author {
@@ -73,19 +76,6 @@ export default async function Page() {
 
   const heroPost = allPosts[1];
   const { title, coverImage, date, excerpt, author, slug } = heroPost;
-
-  if (isEnabled) {
-    return (
-      <DraftPostIndex
-        subscription={{
-          ...pageRequest,
-          initialData: data,
-          token: process.env.NEXT_DATOCMS_API_TOKEN,
-          environment: process.env.NEXT_DATOCMS_ENVIRONMENT || null,
-        }}
-      />
-    );
-  }
 
   return (
     <>
