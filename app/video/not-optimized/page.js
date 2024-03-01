@@ -35,8 +35,7 @@ const PAGE_CONTENT_QUERY = `
       coverImage {
         url
         video {
-          duration
-          url
+          mp4Url
         }
       }
       author {
