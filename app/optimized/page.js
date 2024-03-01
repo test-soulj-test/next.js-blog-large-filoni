@@ -11,6 +11,12 @@ import CoverImage from '@/components/cover-image';
 import Link from 'next/link';
 import Avatar from '@/components/avatar';
 
+export async function generateStaticParams() {
+  const { allPosts } = await performRequest({ query: '{ allPosts { slug } }' });
+
+  return allPosts.map(({ slug }) => slug);
+}
+
 const PAGE_CONTENT_QUERY = `
   {
     site: _site {
@@ -29,7 +35,9 @@ const PAGE_CONTENT_QUERY = `
       excerpt
       date
       coverImage {
-        url
+        responsiveImage(imgixParams: {auto: format}) {
+          ...responsiveImageFragment
+        }
       }
       author {
         name
@@ -46,12 +54,15 @@ const PAGE_CONTENT_QUERY = `
   ${responsiveImageFragment}
 `;
 
-function getPageRequest() {
+function getPageRequest(slug) {
   const { isEnabled } = draftMode();
 
-  return { query: PAGE_CONTENT_QUERY, includeDrafts: isEnabled };
+  return {
+    query: PAGE_CONTENT_QUERY,
+    includeDrafts: isEnabled,
+    variables: { slug },
+  };
 }
-
 export default async function Page() {
   const { isEnabled } = draftMode();
 
@@ -79,31 +90,28 @@ export default async function Page() {
     <>
       <Intro />
       <section>
-        <h3 className="mb-4 text-4xl lg:text-6xl leading-tight">Image</h3>
-
-        <div>
-          <Link href={'/optimized'} className="hover:underline">
-            optimized
-          </Link>
+        <div className="mb-8 md:mb-16">
+          <CoverImage
+            title={title}
+            responsiveImage={coverImage.responsiveImage}
+            slug={slug}
+          />
         </div>
-
-        <div>
-          <Link href={'/not-optimized'} className="hover:underline">
-            Not optimized
-          </Link>
-        </div>
-
-        <h3 className="mb-4 text-4xl lg:text-6xl leading-tight">Video</h3>
-        <div>
-          <Link href={'/video/optimized'} className="hover:underline">
-            optimized
-          </Link>
-        </div>
-
-        <div>
-          <Link href={'/video/not-optimized'} className="hover:underline">
-            Not optimized
-          </Link>
+        <div className="md:grid md:grid-cols-2 md:gap-x-16 lg:gap-x-8 mb-20 md:mb-28">
+          <div>
+            <h3 className="mb-4 text-4xl lg:text-6xl leading-tight">
+              <Link href={`/posts/${slug}`} className="hover:underline">
+                {title}
+              </Link>
+            </h3>
+            <div className="mb-4 md:mb-0 text-lg">
+              <DateComponent dateString={date} />
+            </div>
+          </div>
+          <div>
+            <p className="text-lg leading-relaxed mb-4">{excerpt}</p>
+            <Avatar name={author.name} picture={author.picture} />
+          </div>
         </div>
       </section>
     </>

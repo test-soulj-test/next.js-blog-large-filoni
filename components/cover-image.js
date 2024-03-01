@@ -1,9 +1,15 @@
+import { Image as DatocmsImage } from 'react-datocms';
 import cn from 'classnames';
 import Link from 'next/link';
 
-export default function CoverImage({ title, responsiveImage, slug }) {
+export default function CoverImage({
+  title,
+  responsiveImage,
+  notResponsiveImage,
+  slug,
+}) {
   let image;
-  if (responsiveImage.video) {
+  if (notResponsiveImage?.video) {
     image = (
       // biome-ignore lint/a11y/useMediaCaption: <explanation>
       <video
@@ -14,20 +20,49 @@ export default function CoverImage({ title, responsiveImage, slug }) {
           'hover:shadow-medium transition-shadow duration-200': slug,
         })}
       >
-        <source src={responsiveImage.url} type="video/mp4" />
+        <source src={notResponsiveImage.url} type="video/mp4" />
       </video>
     );
-  } else {
+  } else if (notResponsiveImage) {
     image = (
       <img
-        src={responsiveImage.url}
-        alt={`Cover Image for ${title}`}
+        src={notResponsiveImage.url}
+        alt={`Cover for ${title}`}
         className={cn('shadow-small', {
           'hover:shadow-medium transition-shadow duration-200': slug,
         })}
       />
     );
   }
+
+  if (responsiveImage?.video) {
+    image = (
+      // biome-ignore lint/a11y/useMediaCaption: <explanation>
+      <video
+        controls
+        autoPlay
+        alt={`Cover Image for ${title}`}
+        className={cn('shadow-small', {
+          'hover:shadow-medium transition-shadow duration-200': slug,
+        })}
+      >
+        <source src={responsiveImage.video.url} type="video/mp4" />
+      </video>
+    );
+  } else if (responsiveImage) {
+    image = (
+      <DatocmsImage
+        data={{
+          ...responsiveImage,
+          alt: `Cover Image for ${title}`,
+        }}
+        className={cn('shadow-small', {
+          'hover:shadow-medium transition-shadow duration-200': slug,
+        })}
+      />
+    );
+  }
+
   return (
     <div className="-mx-5 sm:mx-0">
       {slug ? (

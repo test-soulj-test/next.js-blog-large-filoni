@@ -1,11 +1,14 @@
 import { draftMode } from 'next/headers';
-import { toNextMetadata } from 'react-datocms';
 
 import { performRequest } from '@/lib/datocms';
 import { metaTagsFragment, responsiveImageFragment } from '@/lib/fragments';
 
 import { DraftPostIndex } from '@/components/draft-post-index';
-import { PostIndex } from '@/components/post-index';
+import Intro from '@/components/intro';
+import DateComponent from '@/components/date';
+import CoverImage from '@/components/cover-image';
+import Link from 'next/link';
+import Avatar from '@/components/avatar';
 
 const PAGE_CONTENT_QUERY = `
   {
@@ -25,9 +28,7 @@ const PAGE_CONTENT_QUERY = `
       excerpt
       date
       coverImage {
-        responsiveImage(imgixParams: {auto: format}) {
-          ...responsiveImageFragment
-        }
+        url
       }
       author {
         name
@@ -50,17 +51,15 @@ function getPageRequest() {
   return { query: PAGE_CONTENT_QUERY, includeDrafts: isEnabled };
 }
 
-export async function generateMetadata() {
-  const { site, blog } = await performRequest(getPageRequest());
-
-  return toNextMetadata([...site.favicon, ...blog.seo]);
-}
-
 export default async function Page() {
   const { isEnabled } = draftMode();
 
   const pageRequest = getPageRequest();
   const data = await performRequest(pageRequest);
+  const { allPosts } = data;
+
+  const heroPost = allPosts[0];
+  const { title, coverImage, date, excerpt, author, slug } = heroPost;
 
   if (isEnabled) {
     return (
@@ -75,5 +74,34 @@ export default async function Page() {
     );
   }
 
-  return <PostIndex data={data} />;
+  return (
+    <>
+      <Intro />
+      <section>
+        <div className="mb-8 md:mb-16">
+          <CoverImage
+            title={title}
+            notResponsiveImage={coverImage}
+            slug={slug}
+          />
+        </div>
+        <div className="md:grid md:grid-cols-2 md:gap-x-16 lg:gap-x-8 mb-20 md:mb-28">
+          <div>
+            <h3 className="mb-4 text-4xl lg:text-6xl leading-tight">
+              <Link href={`/posts/${slug}`} className="hover:underline">
+                {title}
+              </Link>
+            </h3>
+            <div className="mb-4 md:mb-0 text-lg">
+              <DateComponent dateString={date} />
+            </div>
+          </div>
+          <div>
+            <p className="text-lg leading-relaxed mb-4">{excerpt}</p>
+            <Avatar name={author.name} picture={author.picture} />
+          </div>
+        </div>
+      </section>
+    </>
+  );
 }

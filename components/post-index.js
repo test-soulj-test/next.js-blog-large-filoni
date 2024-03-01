@@ -1,6 +1,5 @@
 import HeroPost from './hero-post';
 import Intro from './intro';
-import MoreStories from './more-stories';
 
 export function PostIndex({ data }) {
   const { allPosts } = data;
